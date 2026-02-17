@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des endpoints POPKID-MD</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 0 15px; background: #f5f5f5; }
+        h1 { color: #333; text-align: center; }
+        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card h2 { margin-top: 0; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #2980b9; }
+        pre { background: #272822; color: #f8f8f2; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
+        .response { margin-top: 15px; }
+        hr { margin: 30px 0; }
+        .note { background: #ffffcc; padding: 10px; border-left: 4px solid #f1c40f; margin-bottom: 20px; }
+        .endpoint-url { font-family: monospace; background: #ecf0f1; padding: 4px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test des endpoints POPKID-MD</h1>
+    <p>Base URL : <span class="endpoint-url">https://test-lite-v16w.onrender.com</span></p>
+    <div class="note">
+        <strong>Note :</strong> Assurez-vous que le backend est actif et que le CORS est bien configuré. Les numéros doivent être au format international sans le "+" (ex: 33612345678).
+    </div>
+
+    <!-- Section pour l'endpoint racine / (pairing) -->
+    <div class="card">
+        <h2>🔗 / (pairing)</h2>
+        <label for="pairNumber">Numéro :</label>
+        <input type="text" id="pairNumber" placeholder="Ex: 33612345678">
+        <button onclick="testPairing()">Tester</button>
+        <div id="pairResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /status -->
+    <div class="card">
+        <h2>📊 /status</h2>
+        <label for="statusNumber">Numéro (optionnel, laisser vide pour tous) :</label>
+        <input type="text" id="statusNumber" placeholder="Ex: 33612345678">
+        <button onclick="testStatus()">Tester</button>
+        <div id="statusResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /disconnect -->
+    <div class="card">
+        <h2>🔌 /disconnect</h2>
+        <label for="disconnectNumber">Numéro :</label>
+        <input type="text" id="disconnectNumber" placeholder="Ex: 33612345678">
+        <button onclick="testDisconnect()">Tester</button>
+        <div id="disconnectResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /active -->
+    <div class="card">
+        <h2>✅ /active</h2>
+        <button onclick="testActive()">Tester</button>
+        <div id="activeResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /ping -->
+    <div class="card">
+        <h2>🏓 /ping</h2>
+        <button onclick="testPing()">Tester</button>
+        <div id="pingResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /connect-all -->
+    <div class="card">
+        <h2>🔁 /connect-all</h2>
+        <button onclick="testConnectAll()">Tester</button>
+        <div id="connectAllResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /reconnect -->
+    <div class="card">
+        <h2>🔄 /reconnect</h2>
+        <button onclick="testReconnect()">Tester</button>
+        <div id="reconnectResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /update-config -->
+    <div class="card">
+        <h2>⚙️ /update-config</h2>
+        <label for="updateNumber">Numéro :</label>
+        <input type="text" id="updateNumber" placeholder="Ex: 33612345678">
+        <label for="updateConfig">Configuration (JSON) :</label>
+        <textarea id="updateConfig" rows="4" placeholder='{"prefix":"!","owner":"33612345678"}'></textarea>
+        <button onclick="testUpdateConfig()">Tester</button>
+        <div id="updateResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /verify-otp -->
+    <div class="card">
+        <h2>🔐 /verify-otp</h2>
+        <label for="verifyNumber">Numéro :</label>
+        <input type="text" id="verifyNumber" placeholder="Ex: 33612345678">
+        <label for="verifyOtp">OTP reçu :</label>
+        <input type="text" id="verifyOtp" placeholder="Code à 6 chiffres">
+        <button onclick="testVerifyOtp()">Tester</button>
+        <div id="verifyResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <!-- Section pour /getabout -->
+    <div class="card">
+        <h2>ℹ️ /getabout</h2>
+        <label for="aboutNumber">Numéro du bot :</label>
+        <input type="text" id="aboutNumber" placeholder="Ex: 33612345678">
+        <label for="aboutTarget">Numéro cible :</label>
+        <input type="text" id="aboutTarget" placeholder="Ex: 33698765432">
+        <button onclick="testGetAbout()">Tester</button>
+        <div id="aboutResponse" class="response"><pre>Réponse apparaîtra ici...</pre></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://test-lite-v16w.onrender.com';
+
+        // Fonction générique pour appeler l'API
+        async function callAPI(url, params = {}, method = 'GET') {
+            const fullUrl = new URL(url, BASE_URL);
+            Object.keys(params).forEach(key => {
+                if (params[key] !== undefined && params[key] !== '') {
+                    fullUrl.searchParams.append(key, params[key]);
+                }
+            });
+
+            try {
+                const response = await fetch(fullUrl.toString(), { method });
+                const data = await response.json();
+                return { ok: response.ok, status: response.status, data };
+            } catch (error) {
+                return { ok: false, error: error.message };
+            }
+        }
+
+        // Afficher la réponse dans un élément pre
+        function displayResponse(elementId, result) {
+            const pre = document.querySelector(`#${elementId} pre`);
+            if (result.ok) {
+                pre.textContent = JSON.stringify(result.data, null, 2);
+            } else if (result.error) {
+                pre.textContent = `❌ Erreur réseau : ${result.error}`;
+            } else {
+                pre.textContent = `❌ HTTP ${result.status}\n${JSON.stringify(result.data, null, 2)}`;
+            }
+        }
+
+        // ========== TESTS ==========
+        function testPairing() {
+            const number = document.getElementById('pairNumber').value.trim();
+            if (!number) return alert('Veuillez entrer un numéro');
+            callAPI('/', { number }).then(res => displayResponse('pairResponse', res));
+        }
+
+        function testStatus() {
+            const number = document.getElementById('statusNumber').value.trim();
+            callAPI('/status', { number: number || undefined }).then(res => displayResponse('statusResponse', res));
+        }
+
+        function testDisconnect() {
+            const number = document.getElementById('disconnectNumber').value.trim();
+            if (!number) return alert('Veuillez entrer un numéro');
+            callAPI('/disconnect', { number }).then(res => displayResponse('disconnectResponse', res));
+        }
+
+        function testActive() {
+            callAPI('/active').then(res => displayResponse('activeResponse', res));
+        }
+
+        function testPing() {
+            callAPI('/ping').then(res => displayResponse('pingResponse', res));
+        }
+
+        function testConnectAll() {
+            callAPI('/connect-all').then(res => displayResponse('connectAllResponse', res));
+        }
+
+        function testReconnect() {
+            callAPI('/reconnect').then(res => displayResponse('reconnectResponse', res));
+        }
+
+        function testUpdateConfig() {
+            const number = document.getElementById('updateNumber').value.trim();
+            const configStr = document.getElementById('updateConfig').value.trim();
+            if (!number) return alert('Veuillez entrer un numéro');
+            if (!configStr) return alert('Veuillez entrer une configuration JSON');
+            try {
+                JSON.parse(configStr); // valide
+            } catch {
+                return alert('La configuration doit être un JSON valide');
+            }
+            callAPI('/update-config', { number, config: configStr }).then(res => displayResponse('updateResponse', res));
+        }
+
+        function testVerifyOtp() {
+            const number = document.getElementById('verifyNumber').value.trim();
+            const otp = document.getElementById('verifyOtp').value.trim();
+            if (!number || !otp) return alert('Veuillez entrer le numéro et l\'OTP');
+            callAPI('/verify-otp', { number, otp }).then(res => displayResponse('verifyResponse', res));
+        }
+
+        function testGetAbout() {
+            const number = document.getElementById('aboutNumber').value.trim();
+            const target = document.getElementById('aboutTarget').value.trim();
+            if (!number || !target) return alert('Veuillez entrer le numéro du bot et le numéro cible');
+            callAPI('/getabout', { number, target }).then(res => displayResponse('aboutResponse', res));
+        }
+    </script>
+</body>
+</html>
